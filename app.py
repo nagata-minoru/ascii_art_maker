@@ -161,11 +161,28 @@ with gr.Blocks(title="ASCII Art Maker", css=".ascii-output textarea { width: 120
 
     with gr.Column(scale=1):
       ascii_output = gr.Textbox(label="ASCIIアート出力", lines=30, interactive=True, elem_classes=["ascii-output"])
+      copy_button = gr.Button("クリップボードにコピー", variant="secondary")
 
   charset_choice.change(
     fn=handle_charset_selection,
     inputs=[charset_choice, charset_text],
     outputs=[charset_text, charset_text]
+  )
+
+  copy_button.click(
+    fn=None,
+    inputs=[ascii_output],
+    outputs=[],
+    js="""
+    (text) => {
+      if (navigator && navigator.clipboard && text) {
+        navigator.clipboard.writeText(text);
+        alert("ASCIIアートをクリップボードにコピーしました。");
+      } else {
+        alert("クリップボードへのコピーに失敗しました。");
+      }
+    }
+    """
   )
 
   run_button.click(
