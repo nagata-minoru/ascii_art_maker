@@ -132,7 +132,27 @@ with gr.Blocks(title="ASCII Art Maker", css=".ascii-output textarea { width: 120
     with gr.Column(scale=1):
       img_input = gr.Image(label="画像をアップロード", type="pil")
       width_slider = gr.Slider(minimum=20, maximum=240, value=80, step=2, label="文字幅(横の文字数)")
-      charset_text = gr.Textbox(label="文字セット(左が暗い、右が明るい)", value="@%#*+=-:. ", lines=1)
+
+      charset_choice = gr.Dropdown(
+        label="文字セット（プリセット）",
+        choices=["@%#*+=-:. ", "█▓▒░ ", "10", "カスタム入力"],
+        value="@%#*+=-:. "
+      )
+
+      charset_text = gr.Textbox(
+        label="カスタム文字セット",
+        value="",
+        lines=1,
+        interactive=True,
+        visible=False
+      )
+
+      def handle_charset_selection(choice, custom):
+        if choice == "カスタム入力":
+          return gr.update(visible=True), custom
+        else:
+          return gr.update(visible=False), choice
+
       invert_check = gr.Checkbox(label="明暗を反転する(ポジ/ネガ切り替え)", value=False)
       contrast_slider = gr.Slider(minimum=0.3, maximum=2.5, value=1.0, step=0.05, label="コントラスト")
       vertical_slider = gr.Slider(minimum=0.3, maximum=1.5, value=0.5, step=0.05, label="縦方向のスケール(フォント縦長補正)")
@@ -141,6 +161,12 @@ with gr.Blocks(title="ASCII Art Maker", css=".ascii-output textarea { width: 120
 
     with gr.Column(scale=1):
       ascii_output = gr.Textbox(label="ASCIIアート出力", lines=30, interactive=True, elem_classes=["ascii-output"])
+
+  charset_choice.change(
+    fn=handle_charset_selection,
+    inputs=[charset_choice, charset_text],
+    outputs=[charset_text, charset_text]
+  )
 
   run_button.click(
     fn=generate_ascii,

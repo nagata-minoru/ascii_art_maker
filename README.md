@@ -2,6 +2,8 @@
 
 **ASCII Art Maker** は、画像を文字だけで描画する ASCIIアート に変換する Python × Gradio アプリです。
 
+このプロジェクトは **uv** により依存管理・実行されます。
+
 画像をアップロードし、幅や文字セットを調整するだけで、スタイリッシュな文字アートを簡単に生成できます。
 
 ---
@@ -33,7 +35,7 @@
 
 ## 🚀 インストール方法
 
-本プロジェクトは Python の仮想環境管理ツール（例: venv や pipenv）で動作します。ここでは汎用的な手順を示します。
+本プロジェクトは Python の高速パッケージマネージャ **uv** を前提としています。
 
 ### 1. プロジェクト取得
 
@@ -42,19 +44,10 @@ git clone https://github.com/nagata-minoru/ascii_art_maker.git
 cd ascii_art_maker
 ```
 
-### 2. 依存パッケージのインストール（例: pip を使用する場合）
+### 2. 依存パッケージのインストール
 
-```bash
-python -m venv .venv
-source .venv/bin/activate   # macOS / Linux
-pip install -r requirements.txt
-```
-
-※ uv を使う場合はプロジェクトで uv が定義されていることを確認してください。
-代替例:
 ```bash
 uv sync
-uv add gradio pillow numpy
 ```
 
 ---
@@ -62,9 +55,7 @@ uv add gradio pillow numpy
 ▶️ 起動方法
 
 ```bash
-uv run python app.py    # uv 使用時
-# または
-python app.py           # 仮想環境で実行
+uv run python app.py
 ```
 
 実行後、ブラウザで以下にアクセスします：
@@ -77,7 +68,7 @@ http://127.0.0.1:7860
 - Gradio – Web UI フレームワーク
 - Pillow (PIL) – 画像の読み込み・処理
 - NumPy – 数値計算
-- uv – （プロジェクトで使用する場合）仮想環境・依存管理ツール
+- uv – 仮想環境・依存管理ツール
 
 ---
 
@@ -87,7 +78,6 @@ http://127.0.0.1:7860
 ascii_art_maker/
 ├── app.py
 ├── README.md
-├── requirements.txt
 └── pyproject.toml
 ```
 
