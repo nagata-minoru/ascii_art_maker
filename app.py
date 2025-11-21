@@ -1,9 +1,26 @@
-import io
+from pathlib import Path
 from typing import Optional
 
+import gradio as gr
 import numpy as np
 from PIL import Image
-import gradio as gr
+
+BASE_DIR = Path(__file__).parent
+STATIC_DIR = BASE_DIR / "static"
+
+
+def load_asset(path: Path) -> str:
+  """
+  Read a text asset safely; fall back to an empty string if missing.
+  """
+  try:
+    return path.read_text(encoding="utf-8")
+  except OSError:
+    return ""
+
+
+CUSTOM_CSS = load_asset(STATIC_DIR / "styles.css")
+COPY_JS = load_asset(STATIC_DIR / "copy.js")
 
 def normalize_charset(charset: str) -> str:
   """
@@ -114,7 +131,7 @@ def generate_ascii(
   except Exception as e:
     return f"エラーが発生しました: {e}"
 
-with gr.Blocks(title="ASCII Art Maker", css=".ascii-output textarea { width: 1200px !important; font-family: 'Courier New', Consolas, monospace !important; overflow-x: auto !important; white-space: pre !important; }") as demo:
+with gr.Blocks(title="ASCII Art Maker", css=CUSTOM_CSS) as demo:
   gr.Markdown(
     """
 # 🎨 ASCII Art Maker
@@ -173,66 +190,7 @@ with gr.Blocks(title="ASCII Art Maker", css=".ascii-output textarea { width: 120
     fn=None,
     inputs=[ascii_output],
     outputs=[],
-    js="""
-    (text) => {
-      const showToast = (message, type = "success") => {
-        // 既存トーストがあれば消す
-        const old = document.getElementById("ascii-art-toast");
-        if (old) {
-          old.remove();
-        }
-
-        const toast = document.createElement("div");
-        toast.id = "ascii-art-toast";
-        toast.textContent = message;
-
-        toast.style.position = "fixed";
-        toast.style.bottom = "20px";
-        toast.style.right = "20px";
-        toast.style.padding = "10px 16px";
-        toast.style.borderRadius = "6px";
-        toast.style.fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        toast.style.fontSize = "14px";
-        toast.style.color = "#fff";
-        toast.style.zIndex = "9999";
-        toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
-        toast.style.opacity = "0";
-        toast.style.transition = "opacity 0.2s ease";
-
-        if (type === "error") {
-          toast.style.backgroundColor = "rgba(220, 53, 69, 0.95)";  // 赤系
-        } else {
-          toast.style.backgroundColor = "rgba(33, 150, 83, 0.95)";  // 緑系
-        }
-
-        document.body.appendChild(toast);
-        // 次のフレームでフェードイン
-        requestAnimationFrame(() => {
-          toast.style.opacity = "1";
-        });
-
-        // 2秒後にフェードアウトして削除
-        setTimeout(() => {
-          toast.style.opacity = "0";
-          setTimeout(() => {
-            toast.remove();
-          }, 250);
-        }, 2000);
-      };
-
-      if (navigator && navigator.clipboard && text) {
-        navigator.clipboard.writeText(text)
-          .then(() => {
-            showToast("コピーしました！", "success");
-          })
-          .catch(() => {
-            showToast("コピーに失敗しました。", "error");
-          });
-      } else {
-        showToast("クリップボードへのコピーに対応していません。", "error");
-      }
-    }
-    """
+    js=COPY_JS
   )
 
   run_button.click(
