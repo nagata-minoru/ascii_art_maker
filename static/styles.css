@@ -1,5 +1,4 @@
 .ascii-output textarea {
-.ascii-output textarea {
   /* ASCIIアート表示用のテキストエリアを横長・等幅で表示 */
   width: 1200px !important;
   font-family: "Courier New", Consolas, monospace !important;
