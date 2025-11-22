@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+# ASCIIアート変換の主要ロジックを直接 import するため、リポジトリルートをパスに追加
+
 import numpy as np
 from PIL import Image
 
