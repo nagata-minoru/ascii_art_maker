@@ -14,3 +14,15 @@ updates:
       security:
         applies-to: security-updates
         patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      actions:
+        patterns: ['*']
+      security:
+        applies-to: security-updates
+        patterns: ['*']
