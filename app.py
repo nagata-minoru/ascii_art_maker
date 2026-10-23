@@ -131,7 +131,7 @@ def generate_ascii(
   except Exception as e:
     return f"エラーが発生しました: {e}"
 
-with gr.Blocks(title="ASCII Art Maker", css=CUSTOM_CSS) as demo:
+with gr.Blocks(title="ASCII Art Maker") as demo:
   gr.Markdown(
     """
 # 🎨 ASCII Art Maker
@@ -200,4 +200,5 @@ with gr.Blocks(title="ASCII Art Maker", css=CUSTOM_CSS) as demo:
   )
 
 if __name__ == "__main__":
-  demo.launch()
+  # Gradio 6 から css は Blocks ではなく launch() に渡す
+  demo.launch(css=CUSTOM_CSS)
