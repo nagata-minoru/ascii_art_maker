@@ -15,6 +15,7 @@ from app import (
   generate_ascii,
   image_to_ascii,
   normalize_charset,
+  to_gray,
 )
 def test_normalize_charset_strips_whitespace_and_duplicates():
   # 空白と重複文字を取り除けること
@@ -32,6 +33,34 @@ def test_adjust_contrast_gray_scales_around_midpoint():
   np.testing.assert_array_equal(
     np.array(adjusted), np.array([[0, 255]], dtype=np.uint8)
   )
+def test_to_gray_scales_16bit_image_to_8bit():
+  # 16 ビット画像は 255 で切り詰めず、0〜65535 を 0〜255 に縮めること
+  img = Image.fromarray(np.array([[0, 257, 32896, 65535]], dtype=np.uint16))
+  assert img.mode == "I;16"
+
+  gray = to_gray(img)
+
+  assert gray.mode == "L"
+  np.testing.assert_array_equal(
+    np.array(gray), np.array([[0, 1, 128, 255]], dtype=np.uint8)
+  )
+def test_to_gray_scales_32bit_integer_image_to_8bit():
+  # 32 ビット整数（I）の画像も 16 ビットの範囲として縮め、範囲外は切り詰めること
+  img = Image.fromarray(np.array([[0, 32896, 65535, 70000]], dtype=np.int32))
+  assert img.mode == "I"
+
+  np.testing.assert_array_equal(
+    np.array(to_gray(img)), np.array([[0, 128, 255, 255]], dtype=np.uint8)
+  )
+def test_image_to_ascii_handles_16bit_gradient():
+  # 16 ビットのグラデーションでも暗い文字から明るい文字まで使われること
+  img = Image.fromarray(np.array([[0, 21845, 43690, 65535]], dtype=np.uint16))
+
+  ascii_art = image_to_ascii(
+    img, width=4, charset="ABCD", invert=False, contrast=1.0, vertical_scale=1.0
+  )
+
+  assert ascii_art == "ABCD"
 def test_image_to_ascii_maps_pixels_with_given_charset():
   # 指定した文字セットを使ってピクセルがマッピングされること
   img = Image.fromarray(np.array([[0, 255]], dtype=np.uint8), mode="L")

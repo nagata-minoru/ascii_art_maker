@@ -36,6 +36,22 @@ def normalize_charset(charset: str) -> str:
   if not result:
     return "@%#*+=-:. "
   return "".join(result)
+def to_gray(img: Image.Image) -> Image.Image:
+  """
+  画像を 0〜255 の 8 ビットグレースケール画像に変換する。
+  16 ビット PNG などの整数モード（I;16 系・I）は、Pillow の convert("L") だと
+  255 を超える値が 255 に切り詰められて真っ白になるため、0〜65535 を 0〜255 に縮めてから変換する。
+
+  引数:
+    img: 変換する画像
+  戻り値:
+    モード "L" のグレースケール画像
+  """
+  if img.mode == "I" or img.mode.startswith("I;16"):
+    arr = np.array(img).astype(np.float32) / 65535.0 * 255.0
+    arr = np.clip(arr, 0.0, 255.0).round().astype(np.uint8)
+    return Image.fromarray(arr, mode="L")
+  return img.convert("L")
 def adjust_contrast_gray(gray: Image.Image, contrast: float) -> Image.Image:
   """
   0〜255 のグレースケール画像に対してコントラストを調整。
@@ -69,7 +85,7 @@ def image_to_ascii(
   n_chars = len(charset)
 
   # グレースケールに変換
-  gray = img.convert("L")
+  gray = to_gray(img)
 
   # 画像サイズからリサイズ後の高さを計算
   orig_w, orig_h = gray.size
@@ -138,7 +154,8 @@ with gr.Blocks(title="ASCII Art Maker") as demo:
 
   with gr.Row():
     with gr.Column(scale=1):
-      img_input = gr.Image(label="画像をアップロード", type="pil")
+      # 既定の image_mode="RGB" だと 16 ビット画像が gradio 側で切り詰められるので、元のモードのまま受け取る
+      img_input = gr.Image(label="画像をアップロード", type="pil", image_mode=None)
       width_slider = gr.Slider(
         minimum=20, maximum=240, value=80, step=2, label="文字幅(横の文字数)"
       )
