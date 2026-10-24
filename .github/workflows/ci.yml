@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         # 対応する最も古い版と、新しい版で確かめる（今の pydantic-core は 3.14 に未対応）
-        python: ['3.10', '3.13']
+        python: ['3.11', '3.13']
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.2

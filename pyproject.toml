@@ -6,11 +6,11 @@ readme = "README.md"
 authors = [
     { name = "NAGATA Minoru", email = "nagata@lean-system.co.jp" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "gradio>=6.30.0",
     "numpy>=2.2.6",
-    "pillow>=12.3.0",
+    "pillow>=13.0.0",
 ]
 
 [project.scripts]
@@ -24,3 +24,8 @@ build-backend = "uv_build"
 dev = [
     "pytest>=9.1.1",
 ]
+
+[tool.uv]
+# gradio 6 は pillow<13 に固定しているが、Pillow 13.0.0 で多数の脆弱性が直ったので上書きする。
+# gradio 7（pillow<14 を許す）に上げたら外す
+override-dependencies = ["pillow>=13.0.0"]
